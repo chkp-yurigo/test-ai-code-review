@@ -1,0 +1,35 @@
+name: Copilot Integration
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  copilot:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install Copilot CLI
+      run: npm install -g @githubnext/github-copilot-cli
+
+    - name: Extract PR Code
+      run: |
+        git fetch origin pull/${{ github.event.pull_request.number }}/head:pr-${{ github.event.pull_request.number }}
+        git diff origin/main pr-${{ github.event.pull_request.number }} > pr_diff.txt
+
+    - name: Send to Copilot
+      run: |
+        copilot --file pr_diff.txt --prompt "Here is some code from a pull request. Please provide a review and suggestions for improvement:" > copilot_response.txt
+
+    - name: Comment on Pull Request
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Copilot Response: $(cat copilot_response.txt)
