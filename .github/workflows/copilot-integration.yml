@@ -22,13 +22,14 @@ jobs:
         node -v
         echo "NPM version:"
         npm -v
-        echo "Adding npm global bin to PATH"
-        echo "$(npm bin -g)" >> $GITHUB_PATH
-        export PATH="$(npm bin -g):$PATH"
+        # Correctly add npm global bin to PATH
+        NPM_GLOBAL_BIN=$(npm bin -g)
+        echo $NPM_GLOBAL_BIN >> $GITHUB_PATH
+        export PATH=$NPM_GLOBAL_BIN:$PATH
         echo "PATH after adding npm global bin:"
         echo $PATH
         echo "Contents of npm global bin directory:"
-        ls -la $(npm bin -g)
+        ls -la $NPM_GLOBAL_BIN
         echo "Installed Copilot CLI version:"
         copilot --version || echo "Copilot CLI not found"
       
