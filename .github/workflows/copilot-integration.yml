@@ -23,7 +23,7 @@ jobs:
         echo "NPM version:"
         npm -v
         echo "Adding npm global bin to PATH"
-        echo "::add-path::$(npm config get prefix)/bin"
+        echo "$(npm config get prefix)/bin" >> $GITHUB_PATH
         echo "Installed Copilot CLI version:"
         copilot --version || echo "Copilot CLI not found"
       
