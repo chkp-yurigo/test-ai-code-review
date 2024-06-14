@@ -16,7 +16,14 @@ jobs:
         node-version: '18'
 
     - name: Install Copilot CLI
-      run: npm install -g @githubnext/github-copilot-cli
+      run: |
+        npm install -g @githubnext/github-copilot-cli
+        echo "Node.js version:"
+        node -v
+        echo "NPM version:"
+        npm -v
+        echo "Installed Copilot CLI version:"
+        copilot --version || echo "Copilot CLI not found"
       
     - name: Fetch main branch
       run: |
