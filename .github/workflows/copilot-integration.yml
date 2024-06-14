@@ -17,7 +17,11 @@ jobs:
 
     - name: Install Copilot CLI
       run: npm install -g @githubnext/github-copilot-cli
-
+      
+    - name: Fetch main branch
+      run: |
+        git fetch origin main
+        
     - name: Extract PR Code
       run: |
         git fetch origin pull/${{ github.event.pull_request.number }}/head:pr-${{ github.event.pull_request.number }}
