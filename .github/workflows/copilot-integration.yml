@@ -1,50 +1,24 @@
-name: Copilot Integration
+name: AI Code Reviewer
+
 on:
   pull_request:
-    types: [opened, synchronize]
-
+    types:
+      - opened
+      - synchronize
+permissions: write-all
 jobs:
-  copilot:
+  review:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
-
-    - name: Install Copilot CLI
-      run: |
-        npm install -g @githubnext/github-copilot-cli
-        echo "Node.js version:"
-        node -v
-        echo "NPM version:"
-        npm -v
-        echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
-        export PATH="$HOME/.npm-global/bin:$PATH"
-        echo "PATH after adding npm global bin:"
-        echo $PATH
-        echo "Installed Copilot CLI version:"
-        copilot --version || echo "Copilot CLI not found"
-      
-    - name: Fetch main branch
-      run: |
-        git fetch origin main
-        
-    - name: Extract PR Code
-      run: |
-        git fetch origin pull/${{ github.event.pull_request.number }}/head:pr-${{ github.event.pull_request.number }}
-        git diff origin/main pr-${{ github.event.pull_request.number }} > pr_diff.txt
-
-    - name: Send to Copilot
-      run: |
-        copilot --file pr_diff.txt --prompt "Here is some code from a pull request. Please provide a review and suggestions for improvement:" > copilot_response.txt
-
-    - name: Comment on Pull Request
-      uses: peter-evans/create-or-update-comment@v1
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Copilot Response: $(cat copilot_response.txt)
+      - name: AI Code Reviewer
+        uses: your-username/ai-code-reviewer@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # The GITHUB_TOKEN is there by default so you just need to keep it like it is and not necessarily need to add it as secret as it will throw an error. [More Details](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#about-the-github_token-secret)
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_API_VERSION: "2024-05-01-preview"
+          AZURE_OPENAI_DEPLOYMENT: "gpt-4o"
+          AZURE_OPENAI_ENDPOINT: "https://your-openai-endpoint.openai.azure.com/"
+          exclude: "**/*.json, **/*.md" # Optional: exclude patterns separated by commas
