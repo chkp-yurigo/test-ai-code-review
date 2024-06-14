@@ -25,6 +25,10 @@ jobs:
         echo "Adding npm global bin to PATH"
         echo "$(npm bin -g)" >> $GITHUB_PATH
         export PATH="$(npm bin -g):$PATH"
+        echo "PATH after adding npm global bin:"
+        echo $PATH
+        echo "Contents of npm global bin directory:"
+        ls -la $(npm bin -g)
         echo "Installed Copilot CLI version:"
         copilot --version || echo "Copilot CLI not found"
       
